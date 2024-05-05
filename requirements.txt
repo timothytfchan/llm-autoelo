@@ -6,3 +6,4 @@ openai
 transformers
 torch
 together
+tdqm
