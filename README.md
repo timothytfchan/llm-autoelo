@@ -115,7 +115,7 @@ This script will calculate the Elo scores based on the evaluation results stored
 The pipeline stores the results in an SQLite database specified in the `results_db` field of the configuration file. The database contains the following tables:
 
 - `model_responses`: Stores the responses of each model for each question.
-- `evaluation_results`: Stores the evaluation results, including the models being compared, the question ID, the evaluator's response, and the punitiveness relation.
+- `evaluation_results`: Stores the evaluation results, including the models being compared, the question ID, the evaluator's response, and the relation (i.e. which response is preferred).
 - `response_progress`: Tracks the progress of model prompts for each question.
 - `evaluation_progress`: Tracks the progress of evaluations for each pair of models and question.
 

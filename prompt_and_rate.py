@@ -52,10 +52,10 @@ def prompt_model(db_path, model_name, model_config, question_id, question, lock)
     with lock:
         cursor = conn.cursor()
         cursor.execute("SELECT response FROM model_responses WHERE model_name = ? AND question_id = ?", (model_name, question_id))
-        result = cursor.fetchone()
-        if result:
+        response_result = cursor.fetchone()
+        if response_result:
             conn.close()  # Close the connection before returning
-            return model_name, result[0]
+            return model_name, response_result[0]
 
     try:
         module = __import__(module_name, fromlist=["get_response"])
@@ -88,9 +88,9 @@ def evaluate_responses(db_path, question_id, question, model_names, evaluator_mo
         cursor = conn.cursor()
         for model_name in model_names:
             cursor.execute("SELECT response FROM model_responses WHERE model_name = ? AND question_id = ?", (model_name, question_id))
-            result = cursor.fetchone()
-            if result:
-                available_responses[model_name] = result[0]
+            response_result = cursor.fetchone()
+            if response_result:
+                available_responses[model_name] = response_result[0]
 
     for i in range(len(model_names)):
         for j in range(i + 1, len(model_names)):
@@ -106,8 +106,8 @@ def evaluate_responses(db_path, question_id, question, model_names, evaluator_mo
             # Check if the evaluation is already processed
             with lock:
                 cursor.execute("SELECT processed FROM evaluation_progress WHERE question_id = ? AND model_a = ? AND model_b = ?", (question_id, model_a, model_b))
-                result = cursor.fetchone()
-                if result and result[0]:
+                evaluation_result = cursor.fetchone()
+                if evaluation_result and evaluation_result[0]:
                     continue
 
             try:
@@ -125,23 +125,23 @@ def evaluate_responses(db_path, question_id, question, model_names, evaluator_mo
                 matches = re.findall(r'<answer>(.*?)</answer>', evaluation_result, re.IGNORECASE)
                 answer = matches[-1].strip().upper() if matches else None
 
-                punitiveness_relation = None
+                relation = None
                 if answer == 'A':
-                    punitiveness_relation = [model_a, model_b]
+                    relation = [model_a, model_b]
                 elif answer == 'B':
-                    punitiveness_relation = [model_b, model_a]
+                    relation = [model_b, model_a]
 
                 result = {
                     "model_A": model_a,
                     "model_B": model_b,
                     "evaluator_response": evaluation_result,
-                    "punitiveness_relation": punitiveness_relation
+                    "relation": relation
                 }
                 results.append(result)
 
                 # Store the evaluation result in the database
                 with lock:
-                    cursor.execute("INSERT INTO evaluation_results (model_a, model_b, question_id, evaluator_response, punitiveness_relation) VALUES (?, ?, ?, ?, ?)", (model_a, model_b, question_id, evaluation_result, json.dumps(punitiveness_relation)))
+                    cursor.execute("INSERT INTO evaluation_results (model_a, model_b, question_id, evaluator_response, relation) VALUES (?, ?, ?, ?, ?)", (model_a, model_b, question_id, evaluation_result, json.dumps(relation)))
                     cursor.execute("INSERT OR REPLACE INTO evaluation_progress (question_id, model_a, model_b, processed) VALUES (?, ?, ?, 1)", (question_id, model_a, model_b))
                     cursor.execute("INSERT OR REPLACE INTO evaluation_progress (question_id, model_a, model_b, processed) VALUES (?, ?, ?, 1)", (question_id, model_b, model_a))
                     conn.commit()
@@ -249,7 +249,7 @@ def main():
             model_b TEXT,
             question_id INTEGER,
             evaluator_response TEXT,
-            punitiveness_relation TEXT,
+            relation TEXT,
             PRIMARY KEY (model_a, model_b, question_id)
         )
     """)

@@ -6,20 +6,20 @@ import argparse
 def calculate_elo_scores(conn, k_factor=32, initial_score=1000):
     scores = {}
     cursor = conn.cursor()
-    cursor.execute("SELECT model_a, model_b, punitiveness_relation FROM evaluation_results")
+    cursor.execute("SELECT model_a, model_b, relation FROM evaluation_results")
     results = cursor.fetchall()
 
     for row in results:
-        model_a, model_b, punitiveness_relation_json = row
-        punitiveness_relation = json.loads(punitiveness_relation_json)
+        model_a, model_b, relation = row
+        relation = json.loads(relation)
 
         if model_a not in scores:
             scores[model_a] = initial_score
         if model_b not in scores:
             scores[model_b] = initial_score
 
-        if punitiveness_relation is not None:
-            winner, loser = punitiveness_relation
+        if relation is not None:
+            winner, loser = relation
             ra = scores[winner]
             rb = scores[loser]
             ea = 1 / (1 + 10 ** ((rb - ra) / 400))
