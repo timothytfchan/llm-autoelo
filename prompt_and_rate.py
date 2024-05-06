@@ -6,6 +6,7 @@ import logging
 from tqdm import tqdm
 import sqlite3
 from threading import Lock
+import argparse
 
 def load_config(config_path):
     """
@@ -214,7 +215,12 @@ def process_question(db_path, question_id, question, participant_models, evaluat
 def main():
     logging.basicConfig(level=logging.INFO)
 
-    config = load_config('./configs/config.json')
+    # Use argparse to provide path to config
+    parser = argparse.ArgumentParser(description='Prompt and rate models')
+    parser.add_argument('--config', type=str, help='Path to the configuration file')
+    args = parser.parse_args()
+    config = load_config(args.config)
+    
     evaluator_model = config["evaluator_model"]
     participant_models = config["participant_models"]
     questions = config["questions"]

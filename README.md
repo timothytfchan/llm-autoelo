@@ -92,18 +92,20 @@ Example:
 ## Usage
 1. Set API keys in .env file (GOOGLE_API_KEY, ANTHROPIC_API_KEY, TOGETHER_API_KEY, OPENAI_API_KEY).
 
-2. Run the pipeline:
+2. Set up the configuration JSON file.
+
+3. Run the pipeline:
 
 ```bash
-python prompt_and_rate.py
+python prompt_and_rate.py --config ./configs/config.json
 ```
 
 The pipeline will process the questions, prompt the models, evaluate the responses, and store the results in the specified SQLite database.
 
-3. Calculate Elo scores:
+4. Calculate Elo scores with the database:
 
 ```bash
-python elo.py
+python elo.py --db_path ./results.db
 ```
 
 This script will calculate the Elo scores based on the evaluation results stored in the database and display the scores for each model.

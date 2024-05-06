@@ -1,6 +1,7 @@
 import sqlite3
 import json
 import math
+import argparse
 
 def calculate_elo_scores(conn, k_factor=32, initial_score=1000):
     scores = {}
@@ -29,7 +30,10 @@ def calculate_elo_scores(conn, k_factor=32, initial_score=1000):
     return scores
 
 def main():
-    db_path = "./results.db"
+    parser = argparse.ArgumentParser(description="Calculate Elo scores for models")
+    parser.add_argument("--db_path", type=str, help="Path to the database file")
+    args = parser.parse_args()
+    db_path = args.db_path
     conn = sqlite3.connect(db_path)
 
     elo_scores = calculate_elo_scores(conn)
