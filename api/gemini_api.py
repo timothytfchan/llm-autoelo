@@ -1,8 +1,6 @@
 import os
 from dotenv import load_dotenv
 import time
-import pathlib
-import textwrap
 import google.generativeai as genai
 
 load_dotenv(os.path.join(os.path.dirname(__file__), '..', '.env'))
