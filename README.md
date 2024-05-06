@@ -1,6 +1,6 @@
 # LLM AutoElo
 
-LLM AutoElo is a Python-based pipeline for comparing and ranking language models using the Elo rating system. It allows you to define a set of questions, prompt multiple language models, automatically evaluate their responses with an evaluator language model, and calculate Elo scores based on the evaluation results. This pipeline was inspired by the need to compare and rank language models based on their performance on specific tasks.
+LLM AutoElo is a Python-based pipeline that uses large language models to compare and rank other large language models by any property that can be understood through their responses. It allows you to define a set of questions, prompt multiple language models, automatically evaluate their responses with an evaluator language model, and calculate Elo scores based on the evaluation results. This pipeline was inspired by the need to compare and rank language models based on their performance on specific tasks.
 
 ## Features
 
